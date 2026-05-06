@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Lehrer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>👨‍🏫 Willkommen {{ user.first_name }}!</h1>
+    
+    <div class="card">
+        <h2>Meine Informationen</h2>
+        <table>
+            <tr>
+                <td><strong>Personalnummer:</strong></td>
+                <td>{{ teacher.personalnummer }}</td>
+            </tr>
+            <tr>
+                <td><strong>Fachbereich:</strong></td>
+                <td>{{ teacher.fachbereich }}</td>
+            </tr>
+            <tr>
+                <td><strong>Zimmer:</strong></td>
+                <td>{{ teacher.zimmer }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h2>👥 Meine Schüler</h2>
+        {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Matrikelnummer</th>
+                    <th>Klasse</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
+                    <td>{{ student.matrikelnummer }}</td>
+                    <td>{{ student.klasse }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Noch keine Schüler zugeordnet.</p>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <h2>📝 Heutige Anwesenheit</h2>
+        {% if today_attendance %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Schüler</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in today_attendance %}
+                <tr>
+                    <td>{{ record.student.user.first_name }} {{ record.student.user.last_name }}</td>
+                    <td>
+                        {% if record.anwesend %}
+                            <span style="color: green;">✓ Anwesend</span>
+                        {% else %}
+                            <span style="color: red;">✗ Abwesend</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Noch keine Anwesenheit für heute erfasst.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,152 @@
+from abc import ABC, abstractmethod
+from typing import List
+import msvcrt
+
+
+# 🔷 Abstract State
+class State(ABC):
+
+    @abstractmethod
+    def next(self) -> "State":
+        pass
+
+    @abstractmethod
+    def prev(self) -> "State":
+        pass
+
+    @abstractmethod
+    def get_binary(self) -> List[bool]:
+        pass
+
+    @abstractmethod
+    def get_value(self) -> int:
+        pass
+
+
+# 🔷 Zustände 0–9
+
+class State0(State):
+    def next(self) -> State: return State1()
+    def prev(self) -> State: return State9()
+    def get_value(self) -> int: return 0
+    def get_binary(self) -> List[bool]: return [True, True, True, True, True, True, False]
+
+class State1(State):
+    def next(self) -> State: return State2()
+    def prev(self) -> State: return State0()
+    def get_value(self) -> int: return 1
+    def get_binary(self) -> List[bool]: return [False, True, True, False, False, False, False]
+
+class State2(State):
+    def next(self) -> State: return State3()
+    def prev(self) -> State: return State1()
+    def get_value(self) -> int: return 2
+    def get_binary(self) -> List[bool]: return [True, True, False, True, True, False, True]
+
+class State3(State):
+    def next(self) -> State: return State4()
+    def prev(self) -> State: return State2()
+    def get_value(self) -> int: return 3
+    def get_binary(self) -> List[bool]: return [True, True, True, True, False, False, True]
+
+class State4(State):
+    def next(self) -> State: return State5()
+    def prev(self) -> State: return State3()
+    def get_value(self) -> int: return 4
+    def get_binary(self) -> List[bool]: return [False, True, True, False, False, True, True]
+
+class State5(State):
+    def next(self) -> State: return State6()
+    def prev(self) -> State: return State4()
+    def get_value(self) -> int: return 5
+    def get_binary(self) -> List[bool]: return [True, False, True, True, False, True, True]
+
+class State6(State):
+    def next(self) -> State: return State7()
+    def prev(self) -> State: return State5()
+    def get_value(self) -> int: return 6
+    def get_binary(self) -> List[bool]: return [True, False, True, True, True, True, True]
+
+class State7(State):
+    def next(self) -> State: return State8()
+    def prev(self) -> State: return State6()
+    def get_value(self) -> int: return 7
+    def get_binary(self) -> List[bool]: return [True, True, True, False, False, False, False]
+
+class State8(State):
+    def next(self) -> State: return State9()
+    def prev(self) -> State: return State7()
+    def get_value(self) -> int: return 8
+    def get_binary(self) -> List[bool]: return [True, True, True, True, True, True, True]
+
+class State9(State):
+    def next(self) -> State: return State0()
+    def prev(self) -> State: return State8()
+    def get_value(self) -> int: return 9
+    def get_binary(self) -> List[bool]: return [True, True, True, True, False, True, True]
+
+
+# 🔷 Display
+class Display:
+
+    def __init__(self) -> None:
+        self.current_state: State = State0()
+        self.stack0: List[State] = []
+        self.stack1: List[List[bool]] = []
+
+    def count_up(self) -> None:
+        self.current_state = self.current_state.next()
+        self._push()
+
+    def count_down(self) -> None:
+        self.current_state = self.current_state.prev()
+        self._push()
+
+    def _push(self) -> None:
+        self.stack0.append(self.current_state)
+        self.stack1.append(self.current_state.get_binary())
+
+    # 🔷 True/False → T/F
+    def format_binary(self, binary: List[bool]) -> List[str]:
+        return ["T" if b else "F" for b in binary]
+
+    # 🔷 ASCII 7-Segment Anzeige
+    def draw(self) -> None:
+        seg = self.current_state.get_binary()
+        a, b, c, d, e, f, g = seg
+
+        print(" " + ("_" if a else " ") + " ")
+        print(("|" if f else " ") + ("_" if g else " ") + ("|" if b else " "))
+        print(("|" if e else " ") + ("_" if d else " ") + ("|" if c else " "))
+
+    def show(self) -> None:
+        print("\nZahl:", self.current_state.get_value())
+        print("Binary (T/F):", self.format_binary(self.current_state.get_binary()))
+        self.draw()
+        print("Stack0:", [s.get_value() for s in self.stack0])
+        print("Stack1:", [self.format_binary(b) for b in self.stack1])
+        print("-" * 30)
+
+
+# 🔷 Main (OHNE ENTER)
+if __name__ == "__main__":
+    display = Display()
+
+    print("Steuerung:")
+    print("+ = Count Up")
+    print("- = Count Down")
+    print("q = Beenden")
+
+    while True:
+        display.show()
+        print("Taste drücken (+/-/q)...")
+
+        key = msvcrt.getch().decode("utf-8")
+
+        if key == "+":
+            display.count_up()
+        elif key == "-":
+            display.count_down()
+        elif key.lower() == "q":
+            print("Programm beendet.")
+            break

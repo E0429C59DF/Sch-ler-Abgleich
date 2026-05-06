@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Schüler Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <h1>
+        Willkommen {{ user.first_name|default:user.username }}!
+    </h1>
+
+    <!-- 🔹 STUDENT INFO -->
+    <div class="card">
+        <h2>Meine Informationen</h2>
+
+        <table>
+            <tr>
+                <td><strong>Matrikelnummer:</strong></td>
+                <td>{{ student.matrikelnummer }}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Klasse:</strong></td>
+                <td>{{ student.klasse }}</td>
+            </tr>
+
+            <tr>
+                <td><strong>Geburtsdatum:</strong></td>
+                <td>
+                    {% if student.geburtsdatum %}
+                        {{ student.geburtsdatum|date:"d.m.Y" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td><strong>Telefon:</strong></td>
+                <td>
+                    {% if student.telefon %}
+                        {{ student.telefon }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 🔹 STATISTIK -->
+    <div class="card">
+        <h2>Anwesenheitsstatistik</h2>
+
+        <p>Unterrichtsstunden:
+            <strong>{{ total_classes }}</strong>
+        </p>
+
+        <p>Anwesend:
+            <strong style="color: green;">
+                {{ present }}
+            </strong>
+        </p>
+
+        <p>Abwesend:
+            <strong style="color: red;">
+                {{ absent }}
+            </strong>
+        </p>
+
+        <p>Anwesenheitsquote:
+            <strong>{{ attendance_rate }}%</strong>
+        </p>
+    </div>
+
+    <!-- 🔹 ATTENDANCE LIST -->
+    <div class="card">
+        <h2>Anwesenheitseinträge</h2>
+
+        {% if attendance_records and attendance_records|length > 0 %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Lehrer</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in attendance_records %}
+                <tr>
+                    <td>
+                        {{ record.datum|date:"d.m.Y" }}
+                    </td>
+
+                    <td>
+                        {{ record.teacher.user.first_name }}
+                        {{ record.teacher.user.last_name }}
+                    </td>
+
+                    <td>
+                        {% if record.anwesend %}
+                            <span style="color: green;">Anwesend</span>
+                        {% else %}
+                            <span style="color: red;">Abwesend</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+        {% else %}
+            <p style="opacity: 0.7;">
+                Noch keine Anwesenheitseinträge vorhanden.
+            </p>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

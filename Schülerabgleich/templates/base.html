@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Schul-System{% endblock %}</title>
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <div class="navbar">
+        <div><strong>Schul-System</strong></div>
+        <div>
+            Benutzer: <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+            <a href="{% url 'logout' %}" class="btn" style="margin-left: 1rem;">Logout</a>
+        </div>
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>
+</html>

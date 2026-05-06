@@ -20,5 +20,10 @@ from Schul_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('student/dashboard', views.student_dashboard, name='student_dashboard'),
+    path('teacher/dashboard', views.teacher_dashboard, name='teacher_dashboard'),
+    path('admin/dashboard', views.admin_dashboard, name='admin_dashboard'),
 ]
